@@ -13,7 +13,7 @@ class DisasterCardWidget extends StatelessWidget {
   DisasterCardWidget() : this._disasterType = "Sel Felaketi", this._distance = 400, this._disasterName = "Evimizi su bastı" {}
   DisasterCardWidget.fromModel(DisasterCardModel model):  this._disasterType = model.disasterType, this._distance = model.distance, this._disasterName = model.disasterName {}
 
-  get location => null;
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,6 @@ class DisasterCardWidget extends StatelessWidget {
               ),
               Text("Disaster Type : $_disasterType "),
               Text("Felaketin Uzaklığı : $_distance"),
-              Text("Onay Sayısı: 400m"),
             ],
           )
       ),

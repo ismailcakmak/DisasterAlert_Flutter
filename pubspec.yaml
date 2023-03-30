@@ -31,6 +31,7 @@ dependencies:
   http: ^0.13.5
   google_sign_in: ^5.2.0
   google_maps_flutter:
+  syncfusion_flutter_maps:
   geolocator: ^9.0.2
   flutter:
     sdk: flutter
