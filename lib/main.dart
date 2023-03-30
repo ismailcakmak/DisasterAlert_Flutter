@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -100,6 +101,10 @@ Marker MarkerGenerator({required LatLng position, required String title, require
 
 
 
+
+
+
+
 class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key});
 
@@ -110,8 +115,11 @@ class MyHomePage extends ConsumerStatefulWidget {
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
 
+ final Completer<GoogleMapController> _controller = Completer();
+
+
   bool check = false;
-  LatLng zoomLocation = LatLng(0, 0);
+  late LatLng zoomLocation;
 
 
   var disasterCardRepoVar = DisasterCardRepo(DataService());
@@ -151,16 +159,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     }
 
     var position =  await Geolocator.getCurrentPosition();
-    final LatLng location = LatLng(position.latitude, position.longitude);
-    var tempMarker = MarkerGenerator(position : location, title : "My Location", snippet : "");
-    currentMapMarkers.add(tempMarker);
-    zoomLocation = location;
-
+    zoomLocation = LatLng(position.latitude, position.longitude);
+    initilize();
 
   }
-
-
-  Set<Marker> setOfLocationMarkers = {};
 
 
   Future<void> initilize() async {
@@ -187,11 +189,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    initilize();
+
 
     late GoogleMapController mapController;
-
-    Map<MarkerId, Marker> markers = <MarkerId, Marker>{}; // CLASS MEMBER, MAP OF MARKS
 
 
 
@@ -227,37 +227,36 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   myLocationEnabled : true,
                   //zoomControlsEnabled: true,
                   markers: Set.from(currentMapMarkers),
-                  onMapCreated: (GoogleMapController controller) {
-                    mapController = controller;
+                  onMapCreated: (GoogleMapController mapController) {
+                    _controller.complete(mapController);
                   },
+
                   initialCameraPosition: CameraPosition(
                     target: zoomLocation,
-                    zoom: 11.0,
+                    zoom: 8.0,
                   )
               ),
-            ),
-            ElevatedButton(
-                onPressed: () {
-
-                },
-                child: Text("Deneme"),
             ),
 
             Expanded(
                 child: PageView(
                   controller: controller,
-                  onPageChanged:  (index){
+                  onPageChanged:  (index) async {
 
                     double latitude = disasterCardRepoVar.models[index].location!['latitude'].toDouble() ?? 0.0 ;
                     double longitude = disasterCardRepoVar.models[index].location!['longitude'].toDouble() ?? 0.0;
                     String title = disasterCardRepoVar.models[index].location!['disasterName'] ?? "";
 
-                    mapController.animateCamera(
+                   GoogleMapController googleMapController = await _controller.future;
+                   googleMapController.animateCamera(
                         CameraUpdate.newCameraPosition(
-                            CameraPosition(target: LatLng(latitude, longitude), zoom: 17)
+                            CameraPosition(target: LatLng(latitude, longitude), zoom: 8)
                           //17 is new zoom level
                         )
                     );
+                    setState(() {
+
+                    });
 
                     currentMapMarkers.add(
                       Marker(
@@ -273,11 +272,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 )
             ),
 
-            ElevatedButton(
-                onPressed: () {
-                  disasterCardRepoVar.download();
-                },
-                child: Text("Get Data")),
           ]
       )
           : CircularProgressIndicator(),
