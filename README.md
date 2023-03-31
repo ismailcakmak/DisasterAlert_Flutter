@@ -1,6 +1,22 @@
-# untitled
+# DisasterAlert
 
-A new Flutter project.
+An app that enables the management of disasters and accidents from a single center.
+
+Current features : 
+- Send alerts
+- Get alerts
+- Show alerts with their locations from one page
+
+Further features will be implemented: 
+- Filtering alerts according to type
+- Adding photo to alerts
+- Adding video to alerts
+- Calculating distance of alert from user
+  * And send push notifications if necessary
+- Redirect to phone app for direct call when phone button cliked.
+
+
+
 
 ## Getting Started
 
